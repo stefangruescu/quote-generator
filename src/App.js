@@ -1,25 +1,34 @@
-import logo from './logo.svg';
+import Index from './containers/index/Index';
 import './App.css';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	const [ quote, setQuote ] = useState('');
+	const [ quoteData, setQuoteData ] = useState([]);
+	useEffect(() => {
+		axios.get('https://type.fit/api/quotes').then((response) => {
+			setQuote(response.data[Math.floor(Math.random() * 1500)]);
+			setQuoteData(response.data);
+		});
+	}, []);
+	const changeQuote = (quoteData) => {
+		setQuote(quoteData[Math.floor(Math.random() * 1500)]);
+	};
+	const twitterQuote = (quote) => {
+		const twitterUrl = `https://twitter.com/intent/tweet?text=${quote.text} - ${quote.author}`;
+		window.open(twitterUrl, '_blank');
+	};
+	return (
+		<div className="App">
+			<Index
+				quote={quote.text}
+				author={quote.author}
+				changeQuote={() => changeQuote(quoteData)}
+				twitterQuote={() => twitterQuote(quote)}
+			/>
+		</div>
+	);
 }
 
 export default App;
